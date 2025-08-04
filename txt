@@ -1,0 +1,6 @@
+<!-- Feature	Status
+User, Driver, Restaurant sockets join	
+Order create hone par drivers + restaurant ko notification	
+Order status update hone par user ko notification	
+Disconnect hone par cleaning	
+Global access (app.set('io', io)) -->

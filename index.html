@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swiggy Clone - Realtime Socket Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        #logs {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Swiggy Clone - Socket.IO Frontend</h1>
+
+<div>
+    <button onclick="joinDriver()">Join as Driver</button>
+    <button onclick="joinUser()">Join as User</button>
+    <button onclick="joinRestaurant()">Join as Restaurant</button>
+    <button onclick="createOrder()">Create Order</button>
+    <button onclick="updateOrderStatus()">Update Order Status</button>
+</div>
+
+<div id="logs"></div>
+
+<script>
+    const socket = io('http://localhost:8000'); // <- Change if your backend runs elsewhere
+
+    function log(message) {
+        const logs = document.getElementById('logs');
+        const p = document.createElement('p');
+        p.textContent = message;
+        logs.appendChild(p);
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    function joinDriver() {
+        socket.emit('driver_join');
+        log(' Joined as Driver');
+    }
+
+    function joinUser() {
+        const userId = prompt("Enter your User ID:");
+        if (userId) {
+            socket.emit('user_join', userId);
+            log(`Joined as User: ${userId}`);
+            window.localStorage.setItem('userId', userId);
+        }
+    }
+
+    function joinRestaurant() {
+        const restaurantId = prompt("Enter your Restaurant ID:");
+        if (restaurantId) {
+            socket.emit('restaurant_join', restaurantId);
+            log(`Joined as Restaurant: ${restaurantId}`);
+            window.localStorage.setItem('restaurantId', restaurantId);
+        }
+    }
+
+    function createOrder() {
+        const restaurantId = window.localStorage.getItem('restaurantId') || prompt("Enter Restaurant ID for order:");
+        const userId = window.localStorage.getItem('userId') || prompt("Enter User ID for order:");
+
+        const orderData = {
+            orderId: 'order_' + Date.now(),
+            restaurantId: restaurantId,
+            userId: userId,
+            items: ['Burger', 'Fries', 'Coke'],
+            totalPrice: 350
+        };
+        socket.emit('create_order', orderData);
+        log('🛒 Order Created: ' + JSON.stringify(orderData));
+    }
+
+    function updateOrderStatus() {
+        const userId = window.localStorage.getItem('userId') || prompt("Enter User ID to update status:");
+        const status = prompt("Enter new order status (like Preparing, On The Way, Delivered):");
+
+        if (userId && status) {
+            socket.emit('update_order_status', { userId, status });
+            log(` Order Status Updated for User ${userId}: ${status}`);
+        }
+    }
+
+    // Listening for events
+    socket.on('new_order', (orderData) => {
+        log(' New Order Received: ' + JSON.stringify(orderData));
+    });
+
+    socket.on('order_status_update', (status) => {
+        log(' Order Status Updated: ' + status);
+    });
+
+</script>
+
+</body>
+</html>
+
+
+
+
