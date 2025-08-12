@@ -37,5 +37,4 @@ File Upload: AWS S3 with Multer-S3
 
 Authentication: JWT
 
-Real-time (planned): Socket.io
-
+https://aspirantsally.com/
