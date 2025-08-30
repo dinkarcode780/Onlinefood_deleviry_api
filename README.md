@@ -37,4 +37,3 @@ File Upload: AWS S3 with Multer-S3
 
 Authentication: JWT
 
-https://aspirantsally.com/
